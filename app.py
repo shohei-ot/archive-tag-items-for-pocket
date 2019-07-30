@@ -58,8 +58,10 @@ def req_tag_items(tag = None):
     #     sys.exit(1)
     return respJson['list']
 
-def req_archive(items):
-    itemIds = items.keys()
+def get_ids_from_items(items: dict):
+    return list(items.keys())
+
+def req_archive(itemIds: list):
     actions = list()
     for itemId in itemIds:
         q = {
@@ -85,19 +87,28 @@ def req_archive(items):
     logger.success(dmp)
     return True
 
-def run(tag = None):
+def run(tag = None, itemIdsFilePath = None):
     if tag is None:
         logger.error('Usage: python app.py "my tag name"')
         sys.exit(1)
 
+    idList = list()
+    with open(itemIdsFilePath, 'r') as itemIdsFile:
+        idList.append(itemIdsFile.readline().rstrip('\r\n'))
+
     logger.info('tag: ' + tag)
 
-    items = req_tag_items(tag)
-    # logger.info(json.dumps(items))
-    if len(items) > 0:
-        req_archive(items)
-    else:
-        logger.info('no items')
+    if len(idList) > 0:
+        req_archive(idList)
+    else
+        items = req_tag_items(tag)
+        # logger.info(json.dumps(items))
+        if len(items) > 0:
+            itemIds = get_ids_from_items(items)
+            req_archive(itemIds)
+        else:
+            logger.info('no items')
+
     sys.exit(0)
 
 if __name__ == '__main__':
